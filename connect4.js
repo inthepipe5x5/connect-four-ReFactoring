@@ -12,6 +12,7 @@ class ConnectFourGame{
     this.currPlayer = 1; // active player: 1 or 2
     this.board = this.makeBoard() // array of rows, each row is array of cells  (board[y][x])
     this.makeHtmlBoard();
+    this.gameOver = false;
     myGameInstances.push(this)
   } 
   /** makeBoard: create in-JS board structure:
@@ -85,6 +86,7 @@ placeInTable = (y, x) => {
 /** endGame: announce game end */
 
 endGame(msg) {
+  this.gameOver = true;
   alert(msg);
 }
 
@@ -104,7 +106,7 @@ handleClick = evt => { //standard function -> this is now the html element that 
 
   // place piece in board and add to HTML table
   this.board[y][x] = this.currPlayer;
-  this.placeInTable(y, x)
+  this.gameOver ? alert ('Game is over!'): this.placeInTable(y, x);
   
   // check for win
   if (this.checkForWin()) {
