@@ -6,8 +6,8 @@
  */
 class ConnectFourGame{
   constructor (WIDTH, HEIGHT){
-    this[WIDTH];
-    this[HEIGHT];
+    this.WIDTH = WIDTH;
+    this.HEIGHT = HEIGHT;
     this.currPlayer = 1; // active player: 1 or 2
     this.board = this.makeBoard() // array of rows, each row is array of cells  (board[y][x])
     this.makeHtmlBoard();
@@ -17,21 +17,24 @@ class ConnectFourGame{
    */
   
   makeBoard = () => {
-    let blankBoard = []
+    let blankBoard = [];
     for (let y = 0; y < this.HEIGHT; y++) {
       blankBoard.push(Array.from({ length: this.WIDTH }));
     }
-    return blankBoard.
+    return blankBoard
   }
   /** makeHtmlBoard: make HTML table and row of column tops. */
   
   makeHtmlBoard = () => {
+    console.log(`making a html board`)
     const board = document.getElementById('board');
   
     // make column tops (clickable area for adding a piece to that column)
     const top = document.createElement('tr');
     top.setAttribute('id', 'column-top');
-    top.addEventListener('click', this.handleClick.bind(this));
+    top.addEventListener('click',evt => {
+      this.handleClick(evt)
+    })
   
     for (let x = 0; x < this.WIDTH; x++) {
       const headCell = document.createElement('td');
@@ -58,7 +61,7 @@ class ConnectFourGame{
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
-findSpotForCol(x) {
+findSpotForCol = x => {
   for (let y = this.HEIGHT - 1; y >= 0; y--) {
     if (!this.board[y][x]) {
       return y;
@@ -69,7 +72,7 @@ findSpotForCol(x) {
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 
-placeInTable(y, x) {
+placeInTable = (y, x) => {
   const piece = document.createElement('div');
   piece.classList.add('piece');
   piece.classList.add(`p${this.currPlayer}`);
@@ -82,14 +85,16 @@ placeInTable(y, x) {
 /** endGame: announce game end */
 
 endGame(msg) {
-  alert(msg).call(null);
+  alert(msg);
 }
 
 /** handleClick: handle click of column top to play piece */
 
-handleClick(evt) {
+handleClick = evt => { //standard function -> this is now the html element that was clicked
   // get x from ID of clicked cell
   const x = +evt.target.id;
+  // switch players
+  this.currPlayer = this.currPlayer === 1 ? 2 : 1;
 
   // get next spot in column (if none, ignore click)
   const y = this.findSpotForCol(x);
@@ -98,8 +103,8 @@ handleClick(evt) {
   }
 
   // place piece in board and add to HTML table
-  board[y][x] = this.currPlayer;
-  this.placeInTable(y, x);
+  this.board[y][x] = this.currPlayer;
+  this.placeInTable(y, x)
   
   // check for win
   if (this.checkForWin()) {
@@ -111,18 +116,12 @@ handleClick(evt) {
     return this.endGame('Tie!');
   }
     
-  // switch players
-  this.currPlayer = this.currPlayer === 1 ? 2 : 1;
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 
-checkForWin() {
-  function _win(cells) {
-    // Check four cells to see if they're all color of current player
-    //  - cells: list of four (y, x) cells
-    //  - returns true if all are legal coordinates & all match currPlayer
-
+checkForWin = () => {
+  const _win = cells => {
     return cells.every(
       ([y, x]) =>
         y >= 0 &&
@@ -132,7 +131,6 @@ checkForWin() {
         this.board[y][x] === this.currPlayer
     );
   }
-
   for (let y = 0; y < this.HEIGHT; y++) {
     for (let x = 0; x < this.WIDTH; x++) {
       // get "check list" of 4 cells (starting here) for each of the different
@@ -151,5 +149,4 @@ checkForWin() {
 }
 }//end of ConnectFourGame class
 
-const newGame = new ConnectFourGame(10,8)
-console.log('new game board', newGame.board)
+const newGame = new ConnectFourGame(7,6)
