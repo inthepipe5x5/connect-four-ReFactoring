@@ -4,6 +4,7 @@
  * column until a player gets four-in-a-row (horiz, vert, or diag) or until
  * board fills (tie)
  */
+const myGameInstances = [];
 class ConnectFourGame{
   constructor (WIDTH, HEIGHT){
     this.WIDTH = WIDTH;
@@ -11,6 +12,7 @@ class ConnectFourGame{
     this.currPlayer = 1; // active player: 1 or 2
     this.board = this.makeBoard() // array of rows, each row is array of cells  (board[y][x])
     this.makeHtmlBoard();
+    myGameInstances.push(this)
   } 
   /** makeBoard: create in-JS board structure:
    *   board = array of rows, each row is array of cells  (board[y][x])
@@ -26,7 +28,6 @@ class ConnectFourGame{
   /** makeHtmlBoard: make HTML table and row of column tops. */
   
   makeHtmlBoard = () => {
-    console.log(`making a html board`)
     const board = document.getElementById('board');
   
     // make column tops (clickable area for adding a piece to that column)
@@ -57,7 +58,6 @@ class ConnectFourGame{
       board.append(row);
     }
   }
-  
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
@@ -149,4 +149,21 @@ checkForWin = () => {
 }
 }//end of ConnectFourGame class
 
-const newGame = new ConnectFourGame(7,6)
+//Part 2: Small Improvements - start/restart game button, no more clicking once game done
+const startGameButton = document.getElementById('game-start-button')
+startGameButton.addEventListener('click', (e) => {
+  isThereAGameChecker() ? resetGame() : new ConnectFourGame(7,6);
+})
+
+const resetGame = () => {
+  const pieceDOMList = document.querySelectorAll('td > div.piece')
+  pieceDOMList.forEach(piece => piece.remove())
+  myGameInstances[0].board = myGameInstances[0].makeBoard();
+}
+
+const isThereAGameChecker = () => {
+  return myGameInstances[0] ? true : false; 
+}
+
+
+//Part 3: Player class & color input
