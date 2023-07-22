@@ -4,15 +4,22 @@
  * column until a player gets four-in-a-row (horiz, vert, or diag) or until
  * board fills (tie)
  */
-const myGameInstances = [];
+const myGameInstances = []; //manage game instances here
+const currentGameInstance = myGameInstances[0] || null; 
+let currentPlayerInCurrentInstance = isThereAGameChecker() ? currentGameInstance.currPlayer : null;
+let playerOne = isThereAGameChecker() ? currentGameInstance.playersArr[currentGameInstance.playersArr.indexOf('PlayerOne')] : null; //assign this to instance of player 1 running currently
+let playerTwo = isThereAGameChecker() ? currentGameInstance.playersArr[currentGameInstance.playersArr.indexOf('PlayerTwo')] : null; //assign this to instance of player 2 running currently
+
 class ConnectFourGame{
   constructor (WIDTH, HEIGHT){
     this.WIDTH = WIDTH;
     this.HEIGHT = HEIGHT;
-    this.currPlayer = 1; // active player: 1 or 2
+    this.currPlayer = []; // active player: 1 or 2 
+    this.playersArr = [] //add new players here 
     this.board = this.makeBoard() // array of rows, each row is array of cells  (board[y][x])
     this.makeHtmlBoard();
     this.gameOver = false;
+    this.element = document.querySelector('table#board')
     myGameInstances.push(this)
   } 
   /** makeBoard: create in-JS board structure:
@@ -76,7 +83,7 @@ findSpotForCol = x => {
 placeInTable = (y, x) => {
   const piece = document.createElement('div');
   piece.classList.add('piece');
-  piece.classList.add(`p${this.currPlayer}`);
+  piece.classList.add(`p${this.currPlayer.playerName}`); //add name of player who added piece
   piece.style.top = -50 * (y + 2);
 
   const spot = document.getElementById(`${y}-${x}`);
@@ -96,7 +103,7 @@ handleClick = evt => { //standard function -> this is now the html element that 
   // get x from ID of clicked cell
   const x = +evt.target.id;
   // switch players
-  this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+  this.currPlayer = this.currPlayer === playersArr[0] ? playersArr[1] : playersArr[0];
 
   // get next spot in column (if none, ignore click)
   const y = this.findSpotForCol(x);
@@ -160,12 +167,88 @@ startGameButton.addEventListener('click', (e) => {
 const resetGame = () => {
   const pieceDOMList = document.querySelectorAll('td > div.piece')
   pieceDOMList.forEach(piece => piece.remove())
-  myGameInstances[0].board = myGameInstances[0].makeBoard();
+  currentGameInstance.board = currentGameInstance.makeBoard();
 }
 
 const isThereAGameChecker = () => {
-  return myGameInstances[0] ? true : false; 
+  return currentGameInstance ? true : false; 
 }
 
 
 //Part 3: Player class & color input
+class Player {
+  constructor (playerName, playerColor){
+    this.playerName = playerName;
+    this.playerColor = playerColor;
+    playersArr.push(this)
+  }
+  get nameAndColor () {
+    return `${this.playerName}: ${this.playerColor}`
+  }
+}
+
+class PlayerOne extends Player {
+  constructor(playerName,playerColor){
+    this.playerOrder = 1;
+    super(playerName,playerColor)
+  }
+  set playerOneNameSetter(playerName) {
+    if (typeof playerName === 'string'){
+      this.playerName = playerName;
+    }
+    else {
+      this.playerName = '1'
+      return 
+    }
+  }
+  set playerOneColorSetter(playerColor){
+    if (typeof this.playerColor === 'string'){
+      this.playerColor = playerColor;
+    }
+    else {
+      this.playerColor = 'red'
+    }
+  }
+}
+
+class PlayerTwo extends Player {
+  constructor(playerName,playerColor){
+    this.playerOrder = 2;
+    super(playerName,playerColor)
+  }
+  set playerTwoNameSetter(playerName) {
+    if (typeof playerName === 'string'){
+      this.playerName = playerName;
+    }
+    else {
+      this.playerName = '2'
+      return 
+    }
+  }
+  set playerTwoColorSetter(playerColor){
+    if (typeof this.playerColor === 'string'){
+      this.playerColor = playerColor;
+    }
+    else {
+      this.playerColor = 'blue'
+    }
+  }
+}
+
+const arrayToggler = array => {
+  [array[0],array[1]] = [array[1], array[0]]
+}
+
+const getFormValuesAndMakeNewPlayers = () => {
+  let p1Name = document.querySelector('input#playerOneName').value;
+  let p1Color = document.querySelector('input#playerOneColor').value;
+  
+  let p2Name = document.querySelector('input#playerTwoName').value
+  let p2Color = document.querySelector('input#playerTwoColor').value
+
+  const newplayerOne = new PlayerOne(p1Name, p1Name)
+  const newPlayerTwo = new PlayerTwo(p2Name, p2Color)
+
+  currentGameInstance.currPlayer.push(newplayerOne, newPlayerTwo) 
+  return 
+}
