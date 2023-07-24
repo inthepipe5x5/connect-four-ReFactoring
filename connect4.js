@@ -176,6 +176,7 @@ const resetGame = () => {
   const pieceDOMList = document.querySelectorAll('td > div.piece')
   pieceDOMList.forEach(piece => piece.remove())
   currentGameInstance.gameOver = false;
+  if (currentGameInstance.currPlayer !== playerOne) currentGameInstance.currPlayer = arrayToggler(currentGameInstance.playersArr);
   currentGameInstance.board = currentGameInstance.makeBoard();
 }
 
@@ -250,10 +251,9 @@ const arrayToggler = array => {
   return array[0]
 }
 
-/*TESTING PURPOSES DELETE AFTER*/
+
 let playerOne = isThereAGameChecker() ? currentGameInstance.playersArr[currentGameInstance.playersArr.indexOf('PlayerOne')] : null; //assign this to instance of player 1 running currently
 let playerTwo = isThereAGameChecker() ? currentGameInstance.playersArr[currentGameInstance.playersArr.indexOf('PlayerTwo')] : null; //assign this to instance of player 2 running currently
-console.log(myGameInstances,playerOne, playerTwo)
 
 /*grab input values and make new player classes*/
 getFormValuesAndMakeNewPlayers = () => {
@@ -269,6 +269,5 @@ getFormValuesAndMakeNewPlayers = () => {
   currentGameInstance.playersArr = [newplayerOne, newPlayerTwo]
   currentGameInstance.currPlayer = newplayerOne
   
-  currentGameInstance.playersArr.forEach(playerClass => console.log(playerClass.playerColor))
   return
 }
